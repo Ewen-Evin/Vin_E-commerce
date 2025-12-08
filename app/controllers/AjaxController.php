@@ -1,5 +1,5 @@
 <?php
-require_once "/home/ewenevh/config/database.php";
+require_once __DIR__ . '/../config/database.php';
 
 class AjaxController {
     public function commandeProduits() {

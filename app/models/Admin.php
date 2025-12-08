@@ -1,5 +1,5 @@
 <?php
-require_once "/home/ewenevh/config/database.php";
+require_once __DIR__ . '/../config/database.php';
 
 class Admin {
     public static function getByUsername($username) {
