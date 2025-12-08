@@ -14,7 +14,7 @@ class LoginController {
     }
 
     public function check() {
-        session_start();
+
         $username = $_POST['username'] ?? '';
         $password = $_POST['password'] ?? '';
 
@@ -30,8 +30,8 @@ class LoginController {
         }
     }
 
-    public function logout() {
-        session_start();
+    public function logout() {  
+           
         session_destroy();
         header("Location: index.php?page=login");
         exit;
