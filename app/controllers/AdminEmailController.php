@@ -84,8 +84,8 @@ class AdminEmailController {
     }
     
     private function envoyerEmail($destinataire, $sujet, $message) {
-        $headers = "From: Ewen et Vins <vin-contact@ewenevin.fr>\r\n";
-        $headers .= "Reply-To: vin-contact@ewenevin.fr\r\n";
+        $headers = "From: Ewen et Vins <contact@ewenevin.fr>\r\n";
+        $headers .= "Reply-To: contact@ewenevin.fr\r\n";
         $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
         $headers .= "MIME-Version: 1.0\r\n";
         
@@ -141,18 +141,19 @@ class AdminEmailController {
                     </div>
 
                     <div class="highlight">
-                        <h3 style="color: #856404; margin-top: 0;">🚚 INFORMATION DE LIVRAISON</h3>
+                        <h3 style="color: #856404; margin-top: 0;">🚚 INFORMATION IMPORTANTE</h3>
                         <p style="font-size: 1.2em; font-weight: bold; color: #856404;">
-                            "Bonsoir,<br>
-                            La livraison du vin se fera le 8 décembre à 17h."
+                            Bonsoir,<br>
+                            Le vin est arrivé chez moi ce soir ! 🎉<br>
+                            La livraison se fera d'ici ce weekend.
                         </p>
                     </div>
 
                     <div class="info-box">
                         <h3 style="color: #155724; margin-top: 0;">📋 Détails de la livraison</h3>
                         <ul style="margin-bottom: 0;">
-                            <li><strong>Date :</strong> 8 décembre 2025</li>
-                            <li><strong>Heure :</strong> 17h00</li>
+                            <li><strong>Le vin est arrivé :</strong> Ce soir</li>
+                            <li><strong>Livraison prévue :</strong> Ce weekend</li>
                             <li><strong>Lieu :</strong> Vous serez contacté pour les détails du point de retrait</li>
                             <?php if ($commande['meme_personne'] == 1): ?>
                                 <li><strong>Personne de récupération :</strong> <?= htmlspecialchars($commande['nom_client']) ?></li>
@@ -165,7 +166,7 @@ class AdminEmailController {
                     <div class="section">
                         <h3>📞 Contact</h3>
                         <p>Si vous avez des questions concernant cette livraison, n'hésitez pas à nous contacter :</p>
-                        <p>📧 <a href="mailto:vin-contact@ewenevin.fr">vin-contact@ewenevin.fr</a></p>
+                        <p>📧 <a href="mailto:contact@ewenevin.fr">contact@ewenevin.fr</a></p>
                     </div>
 
                     <div class="section" style="text-align: center; background: #f8f9fa;">
@@ -175,7 +176,7 @@ class AdminEmailController {
                 
                 <div class="footer">
                     <p>🍷 L'équipe Ewen et Vins</p>
-                    <p>Email : <a href="mailto:vin-contact@ewenevin.fr" style="color: #fff;">vin-contact@ewenevin.fr</a></p>
+                    <p>Email : <a href="mailto:contact@ewenevin.fr" style="color: #fff;">contact@ewenevin.fr</a></p>
                     <p style="margin-top: 15px; font-size: 12px; opacity: 0.8;">
                         Cet email a été envoyé automatiquement, merci de ne pas y répondre directement.
                     </p>

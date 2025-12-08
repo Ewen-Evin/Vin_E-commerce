@@ -37,7 +37,7 @@ if (!isset($_SESSION['admin'])) {
         <!-- NOUVEAU : Bouton pour envoyer l'email de livraison -->
         <div class="action-card">
             <h3>📧 Notification Livraison</h3>
-            <p>Envoyer l'info de livraison du 8 décembre</p>
+            <p>Envoyer l'info de livraison du weekend</p>
             <button type="button" class="btn btn-warning" onclick="sendDeliveryEmail()">
                 Envoyer l'email
             </button>
@@ -57,8 +57,10 @@ function sendDeliveryEmail() {
         html: `
             <div class="text-start">
                 <p><strong>Information de livraison :</strong></p>
-                <p>"Bonsoir, La livraison du vin se fera le 8 décembre à 17h."</p>
-                <p><strong>Mode test activé :</strong> L'email sera envoyé uniquement à <strong>ewenevin0@gmail.fr</strong></p>
+                <p>"Bonsoir,<br>
+                Le vin est arrivé chez moi ce soir ! 🎉<br>
+                La livraison se fera d'ici ce weekend."</p>
+                <p><strong>Mode test activé :</strong> L'email sera envoyé uniquement à <strong>ewenevin0@gmail.com</strong></p>
             </div>
         `,
         icon: 'info',
