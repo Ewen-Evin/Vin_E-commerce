@@ -1,11 +1,17 @@
 <?php
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 class AdminEmailController {
     private $db;
+    private $mailConfig;
     
     public function __construct() {
         $this->db = Database::getConnection();
+        $this->mailConfig = Database::getMailConfig();
     }
     
     public function sendDeliveryEmail() {
@@ -80,26 +86,48 @@ class AdminEmailController {
         $sujet = "📦 Information Livraison - Votre commande #" . $commande['id'] . " - Ewen et Vins";
         $message = $this->construireEmailLivraison($commande);
         
-        return $this->envoyerEmail($destinataire, $sujet, $message);
+        return $this->envoyerEmailPHPMailer($destinataire, $sujet, $message);
     }
     
-    private function envoyerEmail($destinataire, $sujet, $message) {
-        $headers = "From: Ewen et Vins <contact@ewenevin.fr>\r\n";
-        $headers .= "Reply-To: contact@ewenevin.fr\r\n";
-        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-        $headers .= "MIME-Version: 1.0\r\n";
-        
+    private function envoyerEmailPHPMailer($destinataire, $sujet, $message) {
         try {
-            // Envoi réel de l'email
-            $envoye = mail($destinataire, $sujet, $message, $headers);
+            $mail = new PHPMailer(true);
+            $mail->CharSet = 'UTF-8';
+            
+            // Config SMTP Zoho
+            $mail->isSMTP();
+            $mail->Host = $this->mailConfig['host'];
+            $mail->SMTPAuth = true;
+            $mail->Username = $this->mailConfig['username'];
+            $mail->Password = $this->mailConfig['password'];
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port = $this->mailConfig['port'];
+            
+            // Expéditeur
+            $mail->setFrom($this->mailConfig['from'], $this->mailConfig['from_name']);
+            
+            // Destinataire
+            $mail->addAddress($destinataire);
+            
+            // Répondre à
+            $mail->addReplyTo($this->mailConfig['from'], $this->mailConfig['from_name']);
+            
+            // Contenu HTML
+            $mail->isHTML(true);
+            $mail->Subject = $sujet;
+            $mail->Body = $message;
+            
+            // Envoyer l'email
+            $envoye = $mail->send();
             
             if ($envoye) {
                 error_log("EMAIL LIVRAISON ENVOYÉ - À: $destinataire, Sujet: $sujet");
             } else {
-                error_log("ERREUR ENVOI EMAIL LIVRAISON - À: $destinataire, Sujet: $sujet");
+                error_log("ERREUR ENVOI EMAIL LIVRAISON - À: $destinataire, Sujet: $sujet - Erreur: " . $mail->ErrorInfo);
             }
             
             return $envoye;
+            
         } catch (Exception $e) {
             error_log("EXCEPTION ENVOI EMAIL LIVRAISON: " . $e->getMessage());
             return false;

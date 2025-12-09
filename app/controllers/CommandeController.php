@@ -1,12 +1,18 @@
 <?php
 require_once __DIR__ . '/../../config/database.php';
 require_once "app/models/Produit.php";
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 class CommandeController {
     private $db;
+    private $mailConfig;
     
     public function __construct() {
         $this->db = Database::getConnection();
+        $this->mailConfig = Database::getMailConfig();
     }
     
     public function form() {
@@ -233,8 +239,8 @@ class CommandeController {
         $sujet = "Confirmation de votre commande #" . $commandeId . " - Ewen et Vins";
         $message = $this->construireEmailConfirmation($commande, $produits, $total);
         
-        // Envoyer l'email
-        return $this->envoyerEmail($commande['email'], $sujet, $message);
+        // Envoyer l'email avec PHPMailer
+        return $this->envoyerEmailPHPMailer($commande['email'], $sujet, $message);
     }
 
     private function getCommandeById($commandeId) {
@@ -323,25 +329,47 @@ class CommandeController {
         return $total;
     }
 
-    private function envoyerEmail($destinataire, $sujet, $message) {
-        $headers = "From: Ewen et Vins <vin-contact@ewenevin.fr>\r\n";
-        $headers .= "Reply-To: vin-contact@ewenevin.fr\r\n";
-        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-        $headers .= "MIME-Version: 1.0\r\n";
-        
+    private function envoyerEmailPHPMailer($destinataire, $sujet, $message) {
         try {
-            // Envoi réel de l'email
-            $envoye = mail($destinataire, $sujet, $message, $headers);
+            $mail = new PHPMailer(true);
+            $mail->CharSet = 'UTF-8';
+            
+            // Config SMTP Zoho
+            $mail->isSMTP();
+            $mail->Host = $this->mailConfig['host'];
+            $mail->SMTPAuth = true;
+            $mail->Username = $this->mailConfig['username'];
+            $mail->Password = $this->mailConfig['password'];
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port = $this->mailConfig['port'];
+            
+            // Expéditeur
+            $mail->setFrom($this->mailConfig['from'], $this->mailConfig['from_name']);
+            
+            // Destinataire
+            $mail->addAddress($destinataire);
+            
+            // Répondre à
+            $mail->addReplyTo($this->mailConfig['from'], $this->mailConfig['from_name']);
+            
+            // Contenu HTML
+            $mail->isHTML(true);
+            $mail->Subject = $sujet;
+            $mail->Body = $message;
+            
+            // Envoyer l'email
+            $envoye = $mail->send();
             
             if ($envoye) {
-                error_log("EMAIL ENVOYÉ - À: $destinataire, Sujet: $sujet");
+                error_log("EMAIL CONFIRMATION ENVOYÉ - À: $destinataire, Sujet: $sujet");
             } else {
-                error_log("ERREUR ENVOI EMAIL - À: $destinataire, Sujet: $sujet");
+                error_log("ERREUR ENVOI EMAIL CONFIRMATION - À: $destinataire, Sujet: $sujet - Erreur: " . $mail->ErrorInfo);
             }
             
             return $envoye;
+            
         } catch (Exception $e) {
-            error_log("EXCEPTION ENVOI EMAIL: " . $e->getMessage());
+            error_log("EXCEPTION ENVOI EMAIL CONFIRMATION: " . $e->getMessage());
             return false;
         }
     }
@@ -520,7 +548,7 @@ class CommandeController {
 
                     <div class="section" style="text-align: center; background: #f8f9fa;">
                         <h3>❓ Une question ?</h3>
-                        <p>Contactez-nous à <a href="mailto:vin-contact@ewenevin.fr" style="color: #5a0c24;">vin-contact@ewenevin.fr</a></p>
+                        <p>Contactez-nous à <a href="mailto:<?= $this->mailConfig['from'] ?>"><?= $this->mailConfig['from'] ?></a></p>
                         <p>Nous vous répondrons dans les plus brefs délais.</p>
                     </div>
                 </div>
@@ -528,7 +556,7 @@ class CommandeController {
                 <div class="footer">
                     <p>Merci pour votre confiance !</p>
                     <p><strong>🍷 L'équipe Ewen et Vins</strong></p>
-                    <p>Email : <a href="mailto:vin-contact@ewenevin.fr" style="color: #fff;">vin-contact@ewenevin.fr</a></p>
+                    <p>Email : <a href="mailto:<?= $this->mailConfig['from'] ?>" style="color: #fff;"><?= $this->mailConfig['from'] ?></a></p>
                     <p style="margin-top: 15px; font-size: 12px; opacity: 0.8;">
                         Cet email a été envoyé automatiquement, merci de ne pas y répondre.
                     </p>
