@@ -40,8 +40,8 @@ class AdminEmailController {
             foreach ($commandes as $commande) {
                 // Pour le moment, on envoie uniquement à l'email de test
                 // COMMENTER la ligne ci-dessous et DÉCOMMENTER la suivante pour envoyer à tous les clients
-                $emailDestinataire = 'ewenevin0@gmail.com'; // MODE TEST
-                // $emailDestinataire = $commande['email']; // MODE PRODUCTION
+                //$emailDestinataire = 'ewenevin0@gmail.com'; // MODE TEST
+                $emailDestinataire = $commande['email']; // MODE PRODUCTION
                 
                 $envoye = $this->envoyerEmailLivraison([
                     'id' => $commande['id'],
@@ -68,7 +68,7 @@ class AdminEmailController {
                 'success' => true, 
                 'message' => $message,
                 'details' => $resultats,
-                'test_mode' => true // Indique qu'on est en mode test
+                'test_mode' => false // Indique qu'on est en mode test
             ]);
             
         } catch (Exception $e) {
@@ -172,7 +172,7 @@ class AdminEmailController {
                         <h3 style="color: #856404; margin-top: 0;">🚚 INFORMATION IMPORTANTE</h3>
                         <p style="font-size: 1.2em; font-weight: bold; color: #856404;">
                             Bonsoir,<br>
-                            Le vin est arrivé chez moi ce soir ! 🎉<br>
+                            Le vin est arrivé chez moi hier soir ! 🎉<br>
                             La livraison se fera d'ici ce weekend.
                         </p>
                     </div>
@@ -180,7 +180,7 @@ class AdminEmailController {
                     <div class="info-box">
                         <h3 style="color: #155724; margin-top: 0;">📋 Détails de la livraison</h3>
                         <ul style="margin-bottom: 0;">
-                            <li><strong>Le vin est arrivé :</strong> Ce soir</li>
+                            <li><strong>Le vin est arrivé :</strong> Hier soir</li>
                             <li><strong>Livraison prévue :</strong> Ce weekend</li>
                             <li><strong>Lieu :</strong> Vous serez contacté pour les détails du point de retrait</li>
                             <?php if ($commande['meme_personne'] == 1): ?>
